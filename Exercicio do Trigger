@@ -1,0 +1,11 @@
+CREATE DATABASE exercicios_4bm;
+USE exerciciosdonyck_trigger;
+
+DELIMITER //
+CREATE TRIGGER InsereClienteAuditoria AFTER INSERT ON Clientes
+FOR EACH ROW
+BEGIN
+    INSERT INTO Auditoria (mensagem) VALUES (CONCAT('Novo cliente inserido em ', NOW()));
+END;
+//
+DELIMITER ;
