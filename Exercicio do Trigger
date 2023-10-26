@@ -18,3 +18,26 @@ BEGIN
 END;
 //
 DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER AtualizaNomeClienteAuditoria AFTER UPDATE ON Clientes
+FOR EACH ROW
+BEGIN
+    IF OLD.nome != NEW.nome THEN
+        INSERT INTO Auditoria (mensagem) VALUES (CONCAT('Nome do cliente atualizado de ', OLD.nome, ' para ', NEW.nome, ' em ', NOW()));
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER ImpedeAtualizacaoNomeVazioOuNull BEFORE UPDATE ON Clientes
+FOR EACH ROW
+BEGIN
+    IF NEW.nome IS NULL OR NEW.nome = '' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Não é permitido atualizar o nome para vazio ou NULL';
+    END IF;
+END;
+//
+DELIMITER ;
